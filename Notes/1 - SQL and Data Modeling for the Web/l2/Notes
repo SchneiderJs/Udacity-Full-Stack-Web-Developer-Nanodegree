@@ -57,4 +57,123 @@ Outer joins return every row that exists in the left (in a left outer join) or r
 The "left" table refers to the table to the left of the JOIN statement in the query, whereas the "right" table 
     refers to the table to the right of the JOIN statement in the query.
 
+Client-Server Model:
+    A server is a centralized program that communicates over a network (such as the Internet) to serve clients
+    And a client is a program (like the web browser on your computer) that can request data from a server.
 
+Servers, Clients, Hosts
+    In a Client-Server Model, a server serves many clients.
+    Servers and clients are programs that run on hosts.
+    Hosts are computers connected over a network (like the internet!).
+
+Requests and Responses
+    A client sends a request to the server
+    The server's job is to fulfill the request with a response it sends back to the client.
+    Requests and responses are served via a communication protocol, which sets up the expectations and rules for how the communication occurs 
+    between servers and clients.
+
+Relational Database Clients
+    A database client is any program that sends requests to a database
+    In some cases, the database client is a web server! When your browser makes a request, the web server acts as a server (fulfilling that request), 
+    but when the web server requests data from the database, it is acting as a client to that database—and 
+    the database is the server (because it is fulfilling the request).
+
+The web-server receives a request from the client
+and sends a request to the database
+which sends back a response to the web-server
+which then sends back a response to the client.
+
+TCP/IP
+TCP/IP is a suite of communication protocols that is used to connect devices and transfer data over the Internet.
+
+TCP/IP uses:
+    IP addresses: An IP address identifies the location of a computer on a network.
+    Ports: A port is a location on the recipient computer, where data is received.
+
+While an IP address tells you where to find a particular computer, it doesn't tell you specifically where on that computer a 
+particular connection should be made—that's what port numbers are for.
+
+Some port numbers you should know:
+    Port 80: The port number most commonly used for HTTP requests. For example, when a client makes a request to a web server, 
+    this request is usually sent through port 80.
+    Port 5432: The port number used by most database systems; default port for Postgres.
+
+
+TCP/IP is connection-based, meaning all communications between parties are arranged over a connection. 
+A connection is established before any data transmission begins.
+    
+Over TCP/IP, we'll always need to establish a connection between clients and servers in order to enable communications. Moreover:
+    Deliveries over the connection are error-checked: if packets arrive damaged or lost, then they are resent (known as retransmission).
+
+Connecting starts a session. Ending the connection ends the session.
+In a database session, many transactions can occur during a given session. 
+Each transaction does work to commit changes to the database (updating, inserting, or deleting records).
+
+Transactions are atomic units of work for the database to perform as a whole.
+Relational databases are transactional.
+A transaction captures one or more changes to a database, executed in order.
+A transaction bundles multiple pieces of work into a single unit.
+
+Transactions capture operations that change a database's data: this means updates, inserts, and deletions of data. (UPDATE, INSERT, DELETE). 
+Transactions are not concerned with querying (SELECT, GROUP BY) or changes to the data schema (ALTER TABLE).
+A transaction can be cleared of commands using a roolback.
+
+
+Useful basic psql commands:
+    psql <dbname> [<username>]
+    sudo -u postgres psql <dbname> 
+    Starts psql with a connection to dbname. Optionally use another user than current user
+
+In psql:
+    # \l 
+    List all databases on the server, their owners, and user access levels
+
+    # \c <dbname>
+    Connect to a database named
+
+    # \dt
+    Show database tables
+
+    # \d <tablename>
+    Describe table schema
+
+    # \q
+    Quit psql, return to the terminal
+
+    # \?
+    Get help, see list of available commands
+
+
+A DBAPI
+    Different DBAPIs exist for every server framework or language + database system
+    A DBAPIprovides a standard interface for one programming language (like Python) to talk to a relational database server.
+    Is a low level library for writing SQL statements that connect to a database
+    is also known as database adapters
+Database adapters define a standard for using a database (with SQL) and using the results of database queries as input data in the given language.
+    Turn a selected SELECT * from some_table; list of rows into an array of objects in Javascript for say a NodeJS adapter; 
+    or a list of tuples in Python for a Python adapter.
+
+
+Steps for getting a database-backed web application up and running
+    Here is an overview of the list of tasks we'll need to do for a given web app to run with a database.
+    1. Create a database
+    Using createdb in Postgres.
+
+    2. Establish a connection to the database
+    We can connect to a Postgres server from a Python web server using pyscopg2 with psycopg2.connect().
+
+    3. Define and create your data schema
+    Execute CREATE TABLE commands to create the tables and define the schema (attributes, data types, etc) that will define what data gets housed for our web app.
+
+    4. Seed the database with initial data
+    (Optional) Give the database some initial data, e.g. test data for doing local development.
+
+    5. Create routes and views
+    Create routes in our server that will serve pages (views) to the client. Write up our HTML, CSS, and Javascript in our views.
+    Then finally, to get our web app running,
+
+    6. Run the server
+    Get the web server running.
+
+    7. Deploy the server to the web. 
+    And that is, generally, how we would build a web application backed by a database.
