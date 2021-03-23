@@ -1,0 +1,89 @@
+SQLAlchemy Basics
+ - SQLAlchemy is the most popular open-source library for working with relational databases from Python.
+ - It is one type of ORM library, AKA an Object-Relational Mapping library, 
+   which provides an interface for using object oriented programming to interact with a database.
+ - function-based query constructio
+ - Avoid writing raw SQL
+ - Avoid sending SQL to the database on every call
+
+SELECT * FROM todos
+Todo.querry.all()
+
+SQLAlchemy generates SQL statements
+psycopg2 directly sends SQL statements to the databas
+SQLAlchemy depends on psycopg2 or other database drivers to communicate with the database, under the hood.
+
+SQLALchemy lets you traverse through all 3 layers of abstraction to interact with your database.
+    Can stay on the ORM level
+    Can dive into database operations to run customized SQL code specific to the database, on the Expressions level.
+    Can write raw SQL to execute, when needed, on the Engine level.
+        Can more simply use psycopg2 in this case
+
+Layers of SQLAlchemy
+    DBAPI
+    The Dialect
+    The Connection Pool
+    The Engine
+    SQL Expressions
+    SQLAlchemy ORM (optional)
+
+The Dialect
+    We can forget about the db system we are using
+
+The Connection Pool
+    No longer we need to open and close the connection manualy using the dbapi
+    Avoids the problem of continualy open and close connections every data change
+    Also handle drop connections
+    Avoid doing very small calls to the database (very slow)
+
+The Engine
+    - 1 of 3 main layers for how you may choose to interact with the database.
+    - s the lowest level layer of interacting with the database, and is much like using the DBAPI directly. 
+      Very similar to using psycopg2, managing a connection directly.    
+    - The Engine in SQLAlchemy refers to both itself, the Dialect and the Connection Pool,
+      which all work together to interface with our database.
+    - A connection pool gets automatically created when we create a SQLAlchemy engine.
+
+SQL Expressions
+    Instead of sending raw SQL (using the Engine), we can compose python objects to compose SQL expressions, instead.
+    SQL Expressions still involves using and knowing SQL to interact with the database.
+
+SQLAlchemy ORM
+    Lets you compose SQL expressions by mapping python classes of objects to tables in the database
+    Is the highest layer of abstraction in SQLALchemy.
+    Wraps the SQL Expressions and Engine to work together to interact with the database
+    Will be used in this course, so we can know how to use ORM libraries in general.
+
+    Moreover, SQLAlchemy is split into two libraries:
+      SQLAlchemy Core
+      SQLAlchemy ORM (Object Relational Mapping library). SQLALchemy ORM is offered as an optional library, so you don't have to use the ORM in order to use the rest of SQLAlchemy.
+        The ORM uses the Core library inside
+        The ORM lets you map from the database schema to the application's Python objects
+        The ORM persists objects into corresponding database tables
+
+# To run:
+# FLASK_APP=HelloApp.py flask run
+# To enable live reload:
+# FLASK_APP=app.py FLASK_DEBUG=true flask run 
+
+db.Model lets us create and manipulate data models
+db.session lets us create and manipulate database transactions
+
+There's another way of inserting records into our database, rather than entering a client like psql and using INSERT INTO SQL commands: 
+we can call db.session from SQLAlchemy to create records using instances of our defined SQLAlchemy models.
+  In interactive mode, import db and your Person model:
+
+  cd YOUR_PROJECT_DIRECTORY
+  python3
+  person = Person(name='Amy')
+  db.session.add(person)
+  db.session.commit()
+
+SELECT * from persons;
+
+
+Column constraints ensure data integrity across our database, allowing for database accuracy and consistency.
+Constraints are conditions on your column, that provide checks on the data's validity. It does not allow data that violates constraints to be inserted into the database (it will raise an error if you attempt to).
+In SQLAlchemy, constraints are set in db.Column() after setting the data type.
+    nullable=False is equivalent to NOT NULL in SQL
+    unique=True is equivalent to UNIQUE in SQL
