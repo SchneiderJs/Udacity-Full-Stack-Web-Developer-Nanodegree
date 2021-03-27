@@ -8,6 +8,7 @@ import babel
 from flask import Flask, render_template, request, Response, flash, redirect, url_for
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 import logging
 from logging import Formatter, FileHandler
 from flask_wtf import Form
@@ -20,8 +21,10 @@ app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object('config')
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
-# TODO: connect to a local postgresql database
+# TODO 2 - DONE: connect to a local postgresql database 
+# On file config.py
 
 #----------------------------------------------------------------------------#
 # Models.
@@ -39,7 +42,14 @@ class Venue(db.Model):
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    # TODO 3: implement any missing fields, as a database migration using Flask-Migrate
+    website_link = db.Column(db.String(120))
+    seeking_talent = db.Column(db.Boolean)
+    seeking_description = db.Column(db.String())
+    num_past_shows = db.Column(db.Integer)
+    num_upcoming_shows = db.Column(db.Integer)
+    # genres: relationship with tb genres
+    shows = db.relationship('Show', backref=__tablename__, lazy=True)
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
@@ -53,9 +63,28 @@ class Artist(db.Model):
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    # TODO 4: implement any missing fields, as a database migration using Flask-Migrate
+    website_link = db.Column(db.String(120))
+    seeking_venue = db.Column(db.Boolean)
+    seeking_description = db.Column(db.String())
+    num_past_shows = db.Column(db.Integer)
+    num_upcoming_shows = db.Column(db.Integer)
+    shows = db.relationship('Show', backref=__tablename__, lazy=True)
 
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+# TODO 5: Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+class Show(db.Model):
+  __tablename__ = 'Show'
+  id = db.Column(db.Integer, primary_key=True)
+  venue_id = db.Column(db.Integer, db.ForeignKey(
+    'Venue.id'), nullable=False)
+  artist_id = db.Column(db.Integer, db.ForeignKey(
+    'Artist.id'), nullable=False)
+  is_upcoming = db.Column(db.Boolean)
+
+# insted of using db.create_all we are going to use migrations
+# to do that, we are going to type in the bash (at the project directory) the following commands:
+#  $ flask db init
+#  $ flask db migrate
 
 #----------------------------------------------------------------------------#
 # Filters.
