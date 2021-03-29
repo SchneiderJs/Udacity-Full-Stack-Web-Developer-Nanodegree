@@ -13,6 +13,7 @@ import logging
 from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
+from sqlalchemy import func
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
@@ -138,8 +139,11 @@ def venues():
     }]
   }] 
 
+  # get the cities / states groups
   cities_states = db.session.query(Venue.city, Venue.state).group_by(Venue.city, Venue.state).all()
+  # for each group
   for city_state in cities_states:
+    # populate the data with the venues
     venues = Venue.query.filter_by(city=city_state[0], state=city_state[1]).all()
     venues_data = [{"id": venue.id, "name": venue.name, "num_upcoming_shows": venue.num_upcoming_shows} for venue in venues] 
     
@@ -149,16 +153,15 @@ def venues():
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
-  # TODO 7: implement search on artists with partial string search. Ensure it is case-insensitive.
+  # TODO 7 - DONE: implement search on artists with partial string search. Ensure it is case-insensitive.
   # seach for Hop should return "The Musical Hop".
   # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
+  search_term = request.form.get('search_term')
+  venues = Venue.query.filter(func.lower(Venue.name).contains(search_term.lower())).all()
+  
   response={
-    "count": 1,
-    "data": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
+    "count": len(venues),
+    "data": [{"id": venue.id, "name": venue.name, "num_upcoming_shows": venue.num_upcoming_shows} for venue in venues]
   }
   return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
 
